@@ -2,7 +2,7 @@ import React from 'react';
 
 import convertTime from '../utils/convertTime';
 
-const days = [
+export const days = [
   {name: 'Monday', abbr: 'Mon', oneletter: 'M'},
   {name: 'Tuesday', abbr: 'Tue', oneletter: 'T'},
   {name: 'Wednesday', abbr: 'Wed', oneletter: 'W'},

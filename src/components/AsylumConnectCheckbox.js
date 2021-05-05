@@ -63,7 +63,7 @@ const AsylumConnectCheckbox = (props) => {
     props.additionalClasses ? props.additionalClasses.checkboxDisabled : null
   );
 
-  const iconSize = Object.assign(defaultIconSize, props.iconSize);
+  const iconSize = Object.assign({}, defaultIconSize, props.iconSize);
 
   return (
     <FormControlLabel

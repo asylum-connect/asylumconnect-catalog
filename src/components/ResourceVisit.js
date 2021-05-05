@@ -1,15 +1,17 @@
 import React from 'react';
 import url from 'url';
 import trim from 'trim';
+import _ from 'lodash';
 
 import {withStyles} from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import {Grid, Typography} from '@material-ui/core';
 import Fa from 'react-fontawesome';
 
-import {ScheduleParser, AddressParser} from './Parser';
+import {AddressParser, ScheduleParser} from './Parser';
 import Phone from './ResourcePhone';
 import {boldFont, bodyLink, listLink, dividerSpacing} from '../theme';
+
+import EditVisit from './EditComponents/EditVisit';
 
 const styles = (theme) => ({
 	boldFont: boldFont(theme),
@@ -45,6 +47,12 @@ const styles = (theme) => ({
 		[theme.breakpoints.down('xs')]: {
 			display: 'none'
 		}
+	},
+	container: {
+		border: `1px solid ${theme.palette.grey[400]}`,
+		borderRadius: '4px',
+		padding: '25px',
+		marginTop: '25px'
 	}
 });
 
@@ -55,125 +63,146 @@ const Visit = ({
 	phones,
 	emails,
 	locations,
+	schedules,
 	classes,
 	isMobile,
-	hideTitle,
-	className
-}) => (
-	<Grid container spacing={0} className={className}>
-		<Grid item xs={12}>
-			<Typography variant="body2" className={classes.lineSpacing}>
-				<strong className={classes.boldFont + ' ' + classes.mobileHide}>
-					Website:{' '}
-				</strong>
-				{website ? (
-					<a
-						href={website}
-						target="_blank"
-						className={classes.bodyLink}
-						rel="noopener noreferrer"
-					>
-						{isMobile ? url.parse(website).hostname : website}
-					</a>
+	className,
+	editMode,
+	renderSaveButtons
+}) => {
+	if (editMode) {
+		return (
+			<EditVisit
+				website={website}
+				phones={phones}
+				emails={emails}
+				locations={locations}
+				schedules={schedules}
+				renderSaveButtons={renderSaveButtons}
+			/>
+		);
+	}
+
+	return (
+		<Grid container spacing={0} className={className}>
+			<Grid item xs={12}>
+				<Typography variant="body2" className={classes.lineSpacing}>
+					<strong className={classes.boldFont + ' ' + classes.mobileHide}>
+						Website:{' '}
+					</strong>
+					{website ? (
+						<a
+							href={website}
+							target="_blank"
+							className={classes.bodyLink}
+							rel="noopener noreferrer"
+						>
+							{isMobile ? url.parse(website).hostname : website}
+						</a>
+					) : null}
+					<Fa name="link" className={classes.mobileIcon} />
+				</Typography>
+				{emails && emails.length ? (
+					<Typography variant="body2" className={classes.lineSpacing}>
+						<strong className={classes.boldFont + ' ' + classes.mobileHide}>
+							Email:{' '}
+						</strong>
+						{emails.map((email) => {
+							let name = trim(
+								(email.title ? email.title : '') +
+									' ' +
+									(email.first_name ? email.first_name : '') +
+									' ' +
+									(email.last_name ? email.last_name : '')
+							);
+							return (
+								<a
+									href={'mailto:' + email.email}
+									key={email._id}
+									className={classes.bodyLink + ' ' + classes.listLink}
+								>
+									{email.email}
+									{name ? '(' + name + ')' : ''}
+								</a>
+							);
+						})}
+						<Fa name="envelope" className={classes.mobileIcon} />
+					</Typography>
 				) : null}
-				<Fa name="link" className={classes.mobileIcon} />
-			</Typography>
-			{emails && emails.length ? (
-				<Typography variant="body2" className={classes.lineSpacing}>
-					<strong className={classes.boldFont + ' ' + classes.mobileHide}>
-						Email:{' '}
-					</strong>
-					{emails.map((email) => {
-						let name = trim(
-							(email.title ? email.title : '') +
-								' ' +
-								(email.first_name ? email.first_name : '') +
-								' ' +
-								(email.last_name ? email.last_name : '')
-						);
-						return (
-							<a
-								href={'mailto:' + email.email}
-								key={email._id}
-								className={classes.bodyLink + ' ' + classes.listLink}
-							>
-								{email.email}
-								{name ? '(' + name + ')' : ''}
-							</a>
-						);
-					})}
-					<Fa name="envelope" className={classes.mobileIcon} />
-				</Typography>
-			) : null}
-			{phones && phones.length ? (
-				<Typography variant="body2" className={classes.lineSpacing}>
-					<strong className={classes.boldFont + ' ' + classes.mobileHide}>
-						Phone number(s):{' '}
-					</strong>
-					{phones.map((phone) => (
-						<Phone
-							key={phone._id}
-							phone={phone}
-							classes={classes}
-							includeType={true}
-						/>
-					))}
-					<Fa name="phone" className={classes.mobileIcon} />
-				</Typography>
-			) : null}
-			{locations && locations.length
-				? locations.map((location) => {
-						let schedule;
-						return (
-							<div
-								key={location._id}
-								className={
-									locations.length > 1 ? classes.locationSpacing : null
-								}
-							>
+				{phones && phones.length ? (
+					<Typography variant="body2" className={classes.lineSpacing}>
+						<strong className={classes.boldFont + ' ' + classes.mobileHide}>
+							Phone number(s):{' '}
+						</strong>
+						{phones.map((phone) => (
+							<Phone
+								key={phone._id}
+								phone={phone}
+								classes={classes}
+								includeType={true}
+							/>
+						))}
+						<Fa name="phone" className={classes.mobileIcon} />
+					</Typography>
+				) : null}
+				{_.map(locations, (location) => {
+					return (
+						<div
+							key={location._id}
+							className={locations.length > 1 ? classes.locationSpacing : null}
+						>
+							<Typography variant="body2" className={classes.lineSpacing}>
+								<strong className={classes.boldFont}>
+									{location.name || 'Location'}:{' '}
+								</strong>
+								{AddressParser({address: location})}
+								<Fa name="map-marker" className={classes.mobileIcon} />
+							</Typography>
+						</div>
+					);
+				})}
+				{_.map(schedules, (schedule) => {
+					let sched;
+					return (
+						<div
+							key={schedule._id}
+							className={schedules.length > 1 ? classes.locationSpacing : null}
+						>
+							<Typography variant="body2" className={classes.lineSpacing}>
+								<strong className={classes.boldFont}>{`Schedule: `}</strong>
+								{schedule.name}
+								<Fa name="map-marker" className={classes.mobileIcon} />
+							</Typography>
+							{schedule && (sched = ScheduleParser({schedule})).length ? (
+								<Typography variant="body2" className={classes.lineSpacing}>
+									<strong
+										className={classes.boldFont + ' ' + classes.mobileHide}
+									>
+										Hours:{' '}
+									</strong>
+									{sched
+										.map((sch) => {
+											return sch.days + ' ' + sch.time;
+										})
+										.join(', ')}
+									<Fa name="clock-o" className={classes.mobileIcon} />
+								</Typography>
+							) : null}
+							{schedule && schedule.note && trim(schedule.note).length ? (
 								<Typography variant="body2" className={classes.lineSpacing}>
 									<strong className={classes.boldFont}>
-										{location.name ? location.name : 'Location'}:{' '}
+										Additional Information:{' '}
 									</strong>
-									{AddressParser({address: location})}
-									<Fa name="map-marker" className={classes.mobileIcon} />
+									{schedule.note}
+									<Fa name="info-circle" className={classes.mobileIcon} />
 								</Typography>
-								{location.schedule &&
-								Object.keys(location.schedule).length > 1 &&
-								(schedule = ScheduleParser({schedule: location.schedule}))
-									.length ? (
-									<Typography variant="body2" className={classes.lineSpacing}>
-										<strong
-											className={classes.boldFont + ' ' + classes.mobileHide}
-										>
-											Hours:{' '}
-										</strong>
-										{schedule
-											.map((sch) => {
-												return sch.days + ' ' + sch.time;
-											})
-											.join(', ')}
-										<Fa name="clock-o" className={classes.mobileIcon} />
-									</Typography>
-								) : null}
-								{location.schedule &&
-								Object.keys(location.schedule).length > 1 &&
-								location.schedule.notes &&
-								trim(location.schedule.notes).length ? (
-									<Typography variant="body2" className={classes.lineSpacing}>
-										<strong className={classes.boldFont}>
-											Additional Information:{' '}
-										</strong>
-										{location.schedule.notes}
-										<Fa name="info-circle" className={classes.mobileIcon} />
-									</Typography>
-								) : null}
-							</div>
-						);
-				  })
-				: null}
+							) : null}
+						</div>
+					);
+				})}
+			</Grid>
 		</Grid>
-	</Grid>
-);
+	);
+};
 
 export default withStyles(styles)(Visit);

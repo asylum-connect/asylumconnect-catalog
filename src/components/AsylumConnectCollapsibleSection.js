@@ -48,6 +48,11 @@ const styles = (theme) => ({
     color: theme.palette.common.darkBlack,
     right: 0,
   },
+  titleClass: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
 });
 
 class AsylumConnectCollapsibleSection extends React.Component {
@@ -69,7 +74,7 @@ class AsylumConnectCollapsibleSection extends React.Component {
   }
 
   render() {
-    const {content, title, borderTop, borderBottom, className} = this.props;
+    const {content, title, borderTop, borderBottom, className, isEditing, renderEditButton } = this.props;
     const {expanded} = this.state;
     const {
       iconClass,
@@ -79,6 +84,7 @@ class AsylumConnectCollapsibleSection extends React.Component {
       summaryExpandedClass,
       summaryContentClass,
       detailsRootClass,
+      titleClass,
     } = this.props.classes;
     const containerClasses =
       (borderTop ? this.props.classes.borderTop : '') +
@@ -107,7 +113,10 @@ class AsylumConnectCollapsibleSection extends React.Component {
             }}
             expandIcon={<KeyboardArrowDownIcon />}
           >
+          <div className={titleClass}>
             <Typography variant="subtitle2">{title}</Typography>
+            { isEditing && renderEditButton && renderEditButton() }
+          </div>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails
             classes={{
@@ -126,11 +135,15 @@ AsylumConnectCollapsibleSection.defaultProps = {
   borderTop: true,
   borderBottom: false,
   expanded: true,
+  isEditing: false,
+  renderEditButton: null,
 };
 AsylumConnectCollapsibleSection.propTypes = {
   borderTop: PropTypes.bool,
   borderBottom: PropTypes.bool,
   expanded: PropTypes.bool,
+  isEditing: PropTypes.bool,
+  renderEditButton: PropTypes.func,
 };
 
 export default withStyles(styles)(AsylumConnectCollapsibleSection);

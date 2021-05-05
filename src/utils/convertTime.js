@@ -29,6 +29,20 @@ Minor bugfix
 var TWELVE_HOUR_REGEX = /(\d{1,2})\s*:?\s*(\d{0,2})\s*(a\.?m\.?|p\.?m\.?)/i;
 var TWENTY_FOUR_HOUR_REGEX = /(\d{1,2})\s*:\s*(\d{1,2})/i;
 
+export const TimeZones = [
+  { label: '', value: '' },
+  { label: 'AKST', value: 'AKST' },
+  { label: 'AST', value: 'AST' },
+  { label: 'CST', value: 'CST' },
+  { label: 'EST', value: 'EST' },
+  { label: 'HST', value: 'HST' },
+  { label: 'MDT', value: 'MDT' },
+  { label: 'MST', value: 'MST' },
+  { label: 'NST', value: 'NST' },
+  { label: 'PDT', value: 'PDT' },
+  { label: 'PST', value: 'PST' },
+]
+
 function maybePrependZero(str) {
   if (str.length === 1) {
     return '0' + str;
