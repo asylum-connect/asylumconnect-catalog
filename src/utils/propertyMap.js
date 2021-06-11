@@ -33,7 +33,8 @@ const propertyMap = {
 		'community-teens': 'Teens',
 		'community-transgender':
 			'Transgender, non-binary and gender non-conforming community',
-		'community-undocumented': 'Undocumented community'
+		'community-undocumented': 'Undocumented community',
+		'community-unaccompanied-minors': 'Unaccompanied minors'
 	},
 	cost: {
 		'cost-fees': 'Costs: [value]',
