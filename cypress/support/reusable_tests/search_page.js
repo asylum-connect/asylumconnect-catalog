@@ -39,6 +39,7 @@ Cypress.Commands.add('testSearchPageElements',(viewport)=>{
     });
 });
 
+
 Cypress.Commands.add('testSearchAction',(viewport,org)=>{
     cy.viewport(viewport);
     cy.getElementByTestId('search-page-next-button').click();
